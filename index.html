@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Woot Search</title>
+    <style>
+        /* Import Google Font - Inter */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        /* Custom styles for Inter font and general body */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f7fa; /* Lighter, clean background */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align to top for better content flow */
+            min-height: 100vh; /* Full viewport height */
+            padding: 2.5rem 1rem; /* More padding, responsive horizontal */
+            box-sizing: border-box;
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 3rem; /* Increased padding for more breathing room */
+            border-radius: 1.5rem; /* More rounded corners */
+            box-shadow: 0 18px 50px rgba(0, 0, 0, 0.12); /* Deeper, softer shadow */
+            width: 100%;
+            max-width: 960px; /* Slightly wider max-width */
+            display: flex;
+            flex-direction: column;
+            gap: 2rem; /* Increased gap between sections */
+        }
+        .main-heading {
+            font-size: 2.8rem; /* Even larger heading */
+            font-weight: 700;
+            text-align: center;
+            color: #1a202c; /* Darker, more prominent text color */
+            margin-bottom: 1rem; /* Adjusted margin */
+            letter-spacing: -0.03em; /* Slightly tighter letter spacing */
+        }
+        .category-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem; /* Slightly more space between buttons */
+            margin-bottom: 1.8rem; /* More space below categories */
+            justify-content: center;
+        }
+        .category-button {
+            background-color: #e0e7ff; /* Lighter blue/purple background for categories */
+            color: #4338ca; /* Darker blue/purple text color */
+            padding: 0.7rem 1.4rem; /* More padding */
+            border-radius: 0.8rem; /* More rounded buttons */
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out, box-shadow 0.2s ease-in-out;
+            border: 1px solid #c7d2fe; /* Subtle border */
+            flex-shrink: 0;
+            font-size: 0.95rem;
+        }
+        .category-button:hover {
+            background-color: #c7d2fe; /* Slightly darker on hover */
+            transform: translateY(-3px); /* More pronounced lift */
+            box-shadow: 0 6px 15px rgba(67, 56, 202, 0.2); /* Subtle shadow on hover */
+        }
+        .category-button:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+        .search-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem; /* Increased gap */
+        }
+        @media (min-width: 640px) {
+            .search-section {
+                flex-direction: row;
+            }
+        }
+        .search-input {
+            border: 2px solid #cbd5e1; /* Softer border */
+            padding: 0.95rem 1.4rem; /* More padding */
+            border-radius: 0.8rem; /* More rounded */
+            font-size: 1.1rem; /* Slightly larger font */
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            flex-grow: 1;
+            color: #334155; /* Darker text for input */
+        }
+        .search-input::placeholder {
+            color: #94a3b8; /* Muted placeholder */
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: #6d28d9; /* Deeper purple on focus */
+            box-shadow: 0 0 0 5px rgba(109, 40, 217, 0.25); /* More prominent focus ring */
+        }
+        .search-button {
+            background: linear-gradient(135deg, #6d28d9, #8b5cf6); /* Vibrant purple gradient */
+            color: white;
+            padding: 0.95rem 2.2rem; /* More padding */
+            border-radius: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 25px rgba(109, 40, 217, 0.45); /* Deeper shadow */
+            border: none;
+            width: 100%;
+            font-size: 1.1rem;
+        }
+        @media (min-width: 640px) {
+            .search-button {
+                width: auto;
+            }
+        }
+        .search-button:hover {
+            background: linear-gradient(135deg, #5b21b6, #7c3aed); /* Darker gradient on hover */
+            transform: translateY(-4px); /* More pronounced lift */
+            box-shadow: 0 15px 30px rgba(109, 40, 217, 0.6);
+        }
+        .search-button:active {
+            transform: translateY(0);
+            box-shadow: 0 6px 15px rgba(109, 40, 217, 0.3);
+        }
+        .recent-searches-section {
+            margin-top: 1.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .recent-searches-section h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 0.8rem;
+        }
+        .recent-search-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            justify-content: center;
+        }
+        .recent-search-button {
+            background-color: #f0f4f8; /* Light background */
+            color: #5a6a7c; /* Muted text */
+            padding: 0.5rem 1rem;
+            border-radius: 0.6rem;
+            font-weight: 400;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+            border: 1px solid #e2e8f0;
+            font-size: 0.85rem;
+        }
+        .recent-search-button:hover {
+            background-color: #e2e8f0;
+            transform: translateY(-1px);
+        }
+        .recent-search-button:active {
+            transform: translateY(0);
+        }
+
+        .product-card {
+            background-color: #ffffff;
+            padding: 1.8rem; /* More padding */
+            border-radius: 1.2rem; /* More rounded */
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1); /* Subtle shadow for cards */
+            display: flex;
+            flex-direction: column;
+            gap: 0.9rem; /* Increased gap */
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #eef2f6;
+        }
+        .product-card:hover {
+            transform: translateY(-10px); /* More lift on hover */
+            box-shadow: 0 22px 45px rgba(0, 0, 0, 0.2); /* More pronounced shadow on hover */
+        }
+        .product-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 0.9rem; /* More rounded image corners */
+            margin-bottom: 0.9rem;
+            object-fit: contain;
+            max-height: 250px; /* Taller images */
+            align-self: center;
+        }
+        .product-title {
+            font-size: 1.5rem; /* Larger title */
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
+        }
+        .product-details {
+            font-size: 0.95rem;
+            color: #64748b;
+            margin-bottom: 0.5rem;
+        }
+        .product-description {
+            font-size: 1rem; /* Slightly larger description font */
+            color: #4a5568;
+            margin-bottom: 0.8rem;
+        }
+        .product-price {
+            font-size: 1.4rem; /* Larger price font */
+            font-weight: 700;
+            color: #10b981; /* Vibrant teal/green for price */
+            margin-bottom: 1rem;
+        }
+        .go-to-woot-button {
+            background: linear-gradient(135deg, #10b981, #059669); /* Teal/green gradient */
+            color: white;
+            padding: 0.8rem 1.8rem; /* More padding */
+            border-radius: 0.7rem;
+            font-weight: 600;
+            text-align: center;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-block;
+            align-self: flex-start;
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.35);
+        }
+        .go-to-woot-button:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.5);
+        }
+        .go-to-woot-button:active {
+            transform: translateY(0);
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2);
+        }
+        .message-box {
+            background-color: #e0f2f7; /* Light blue for info */
+            border: 1px solid #b3e5fc;
+            color: #0288d1;
+            padding: 1.5rem; /* More padding */
+            border-radius: 1rem; /* More rounded */
+            margin-top: 2rem; /* More margin */
+            text-align: center;
+            font-size: 1.1rem; /* Larger font */
+            font-weight: 500;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        }
+        .message-box.error {
+            background-color: #ffebee;
+            border-color: #ef9a9a;
+            color: #d32f2f;
+        }
+        .message-box.warning {
+            background-color: #fff8e1;
+            border-color: #ffe082;
+            color: #f57f17;
+        }
+        .loading-spinner {
+            border: 5px solid rgba(0, 0, 0, 0.1); /* Thicker spinner */
+            border-left-color: #6d28d9; /* Purple spinner */
+            border-radius: 50%;
+            width: 35px; /* Larger spinner */
+            height: 35px;
+            animation: spin 1s linear infinite;
+            margin: 2.5rem auto; /* More margin */
+            display: none;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .search-results {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2.5rem; /* Increased gap between cards */
+            margin-top: 2.5rem; /* Increased margin */
+        }
+        @media (min-width: 768px) {
+            .search-results {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Styles for hover details */
+        .product-hover-details {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out, opacity 0.5s ease-out; /* Slower, smoother transition */
+            opacity: 0;
+            padding-top: 0;
+            border-top: 1px solid transparent;
+            margin-top: 0;
+        }
+        .product-card:hover .product-hover-details {
+            max-height: 300px; /* Adjusted to fit more content */
+            opacity: 1;
+            padding-top: 1.2rem; /* More padding */
+            border-top: 1px solid #e0e7ee; /* Lighter border on hover */
+            margin-top: 1.2rem;
+        }
+        .product-hover-details p {
+            margin-bottom: 0.5rem; /* More space between detail lines */
+            font-size: 0.95rem;
+            color: #64748b;
+        }
+        .product-hover-details p:last-child {
+            margin-bottom: 0;
+        }
+        .sold-out-badge {
+            position: absolute;
+            top: 1.2rem; /* Adjusted position */
+            right: 1.2rem; /* Adjusted position */
+            background-color: #ef4444; /* Brighter red */
+            color: white;
+            padding: 0.4rem 1rem; /* More padding */
+            border-radius: 0.6rem; /* More rounded */
+            font-size: 0.85rem; /* Slightly larger font */
+            font-weight: 700;
+            z-index: 10;
+            transform: rotate(4deg); /* Slight tilt */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            text-transform: uppercase;
+        }
+        .product-card.sold-out {
+            opacity: 0.5; /* More dimming for sold out items */
+        }
+        .product-card.sold-out .product-title,
+        .product-card.sold-out .product-price {
+            color: #aeb8c7; /* Gray out text for sold out items */
+            text-decoration: line-through;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="main-heading">Woot Search</h1>
+
+        <div id="categoryButtons" class="category-buttons">
+            <!-- Category buttons will be loaded here -->
+        </div>
+
+        <div class="search-section">
+            <input type="text" id="searchQuery" placeholder="Search for products..." class="search-input">
+            <button id="searchButton" class="search-button">Search from Woot</button>
+        </div>
+
+        <div id="recentSearches" class="recent-searches-section">
+            <h3>Recent Searches:</h3>
+            <div class="recent-search-buttons">
+                <!-- Recent search buttons will be loaded here -->
+            </div>
+        </div>
+
+        <div id="loadingSpinner" class="loading-spinner"></div>
+        <div id="messageBox" class="message-box hidden"></div>
+        <div id="searchResults" class="search-results">
+            <!-- Search results will be loaded here -->
+        </div>
+    </div>
+
+    <script type="module">
+        // IMPORTANT: Replace 'YOUR_WOOT_API_KEY' with your actual API key obtained from developer.woot.com
+        // You will need to request an API key via their forums.
+        const WOOT_API_KEY = 'YOUR_WOOT_API_KEY';
+        console.log("WOOT_API_KEY being used:", WOOT_API_KEY); // NEW LOG
+        const WOOT_API_BASE_URL = 'https://developer.woot.com'; // Base URL for Woot API
+        // const WOOT_PRODUCT_BASE_URL = 'https://woot.com/offers/'; // Base URL for actual product pages (no longer needed if API provides full URL)
+
+        const searchQueryInput = document.getElementById('searchQuery');
+        const searchButton = document.getElementById('searchButton');
+        const searchResultsDiv = document.getElementById('searchResults');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const messageBox = document.getElementById('messageBox');
+        const categoryButtonsDiv = document.getElementById('categoryButtons'); // Get the category buttons div
+        const recentSearchesDiv = document.getElementById('recentSearches').querySelector('.recent-search-buttons'); // Get the recent searches button container
+
+        const MAX_RECENT_SEARCHES = 5; // Limit the number of recent searches
+
+        /**
+         * Displays a message in the message box.
+         * @param {string} message - The message to display.
+         * @param {string} type - Type of message (e.g., 'error', 'info', 'warning').
+         */
+        function showMessage(message, type = 'info') {
+            messageBox.textContent = message;
+            messageBox.className = 'message-box'; // Reset classes
+            messageBox.classList.remove('hidden');
+            if (type === 'error') {
+                messageBox.classList.add('error');
+            } else if (type === 'warning') {
+                messageBox.classList.add('warning');
+            }
+        }
+
+        /**
+         * Hides the message box.
+         */
+        function hideMessageBox() {
+            messageBox.classList.add('hidden');
+        }
+
+        /**
+         * Formats a number as a currency string.
+         * @param {number} amount - The numeric amount.
+         * @returns {string} The formatted currency string.
+         */
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(amount);
+        }
+
+        /**
+         * Formats a date string into a more readable format.
+         * @param {string} dateString - The date string from the API (e.g., "2025-07-14T05:00:00+00:00").
+         * @returns {string} The formatted date string.
+         */
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            try {
+                const date = new Date(dateString);
+                return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+            } catch (e) {
+                console.error("Error formatting date:", dateString, e);
+                return dateString; // Return original if parsing fails
+            }
+        }
+
+        /**
+         * Saves a search query to local storage.
+         * @param {string} query - The search query to save.
+         */
+        function saveRecentSearch(query) {
+            if (!query) return; // Don't save empty queries
+            let searches = JSON.parse(localStorage.getItem('recentSearches')) || [];
+            // Add to the beginning and ensure uniqueness
+            searches = [query, ...searches.filter(s => s !== query)];
+            // Limit the number of searches
+            searches = searches.slice(0, MAX_RECENT_SEARCHES);
+            localStorage.setItem('recentSearches', JSON.stringify(searches));
+            displayRecentSearches(); // Update the displayed buttons
+        }
+
+        /**
+         * Loads and displays recent search queries from local storage.
+         */
+        function displayRecentSearches() {
+            const searches = JSON.parse(localStorage.getItem('recentSearches')) || [];
+            recentSearchesDiv.innerHTML = ''; // Clear previous buttons
+
+            if (searches.length === 0) {
+                document.getElementById('recentSearches').style.display = 'none'; // Hide section if no searches
+                return;
+            } else {
+                document.getElementById('recentSearches').style.display = 'block'; // Show section
+            }
+
+            searches.forEach(searchQuery => {
+                const button = document.createElement('button');
+                button.className = 'recent-search-button';
+                button.textContent = searchQuery;
+                button.addEventListener('click', () => {
+                    searchQueryInput.value = searchQuery;
+                    searchWootProducts(searchQuery);
+                });
+                recentSearchesDiv.appendChild(button);
+            });
+        }
+
+        /**
+         * Displays unique categories as clickable buttons.
+         * @param {Array<string>} categories - An array of unique category strings.
+         */
+        function displayCategories(categories) {
+            categoryButtonsDiv.innerHTML = ''; // Clear previous categories
+            if (categories.length === 0) {
+                return;
+            }
+
+            // Add an "All Deals" button
+            const allDealsButton = document.createElement('button');
+            allDealsButton.className = 'category-button';
+            allDealsButton.textContent = 'All Deals';
+            allDealsButton.addEventListener('click', () => {
+                searchQueryInput.value = ''; // Clear search box
+                searchWootProducts(''); // Search for all deals
+            });
+            categoryButtonsDiv.appendChild(allDealsButton);
+
+
+            categories.forEach(category => {
+                const button = document.createElement('button');
+                button.className = 'category-button';
+                button.textContent = category;
+                button.addEventListener('click', () => {
+                    searchQueryInput.value = category; // Set search box to category
+                    searchWootProducts(category); // Search by category
+                });
+                categoryButtonsDiv.appendChild(button);
+            });
+        }
+
+        /**
+         * Fetches products from the Woot API based on the search query.
+         * Note: The Woot API primarily provides "feeds" by category (e.g., 'electronics', 'home').
+         * It does not have a direct "search by keyword" endpoint for all products across all categories.
+         * For a true keyword search, you would likely need to:
+         * 1. Fetch multiple feeds (e.g., 'all', 'electronics', 'home').
+         * 2. Filter the results client-side based on the user's search query.
+         *
+         * This example will simulate fetching from a generic 'all' feed and then filtering.
+         * In a real application, you might iterate through known feed names or use the 'GetOffers'
+         * endpoint if you have specific offer IDs.
+         *
+         * For simplicity, this example will simulate a successful API call with dummy data
+         * if the API key is not set, and show an error if the API key is the placeholder.
+         * If you have a real API key, it will attempt to fetch.
+         */
+        async function searchWootProducts(query) {
+            searchResultsDiv.innerHTML = ''; // Clear previous results
+            hideMessageBox();
+            loadingSpinner.style.display = 'block'; // Show spinner
+
+            // Check if the API key is the default placeholder.
+            // If the user has provided a key, this block will be skipped.
+            if (WOOT_API_KEY === 'YOUR_WOOT_API_KEY') {
+                showMessage("The API key is still the default placeholder. Please replace 'YOUR_WOOT_API_KEY' in the code with your actual API key from developer.woot.com.", 'warning');
+                loadingSpinner.style.display = 'none';
+                // Simulate some dummy data for demonstration if API key is not set
+                const dummyProducts = [
+                    {
+                        title: "Dummy Product A - Great Deal!",
+                        description: "This is a fantastic dummy product with amazing features. Limited stock!",
+                        url: "https://www.woot.com/offers/dummy-product-a-123",
+                        salePrice: { Minimum: 10.00, Maximum: 20.00 },
+                        listPrice: { Minimum: 25.00, Maximum: 25.00 },
+                        site: "DummySite",
+                        photo: "https://placehold.co/200x150/cccccc/333333?text=Dummy+A",
+                        categories: ["DUMMY", "DEALS"],
+                        condition: "New",
+                        isSoldOut: false,
+                        startDate: "2025-07-01T00:00:00+00:00",
+                        endDate: "2025-07-31T23:59:59+00:00"
+                    },
+                    {
+                        title: "Dummy Product B - Electronics Gadget (Sold Out)",
+                        description: "A cool electronic gadget that everyone needs. High quality and durable.",
+                        url: "https://www.woot.com/offers/dummy-product-b-456",
+                        salePrice: { Minimum: 50.00, Maximum: 100.00 },
+                        site: "Electronics",
+                        photo: "https://placehold.co/200x150/cccccc/333333?text=Dummy+B",
+                        categories: ["TECH", "ELECTRONICS"],
+                        condition: "Refurbished",
+                        isSoldOut: true,
+                        startDate: "2025-06-15T00:00:00+00:00",
+                        endDate: "2025-06-30T23:59:59+00:00"
+                    },
+                    {
+                        title: "Dummy Product C - Home Essential",
+                        description: "An essential item for every modern home. Makes life easier.",
+                        url: "https://www.woot.com/offers/dummy-product-c-789",
+                        salePrice: { Minimum: 5.00, Maximum: 15.00 },
+                        site: "Home",
+                        photo: "https://placehold.co/200x150/cccccc/333333?text=Dummy+C",
+                        categories: ["HOME", "KITCHEN"],
+                        condition: "New",
+                        isSoldOut: false,
+                        startDate: "2025-07-10T00:00:00+00:00",
+                        endDate: "2025-07-20T23:59:59+00:00"
+                    }
+                ];
+                displayResults(dummyProducts.filter(p => p.title.toLowerCase().includes(query.toLowerCase())));
+                // For dummy data, manually extract categories
+                const allDummyCategories = new Set();
+                dummyProducts.forEach(p => {
+                    if (p.categories) {
+                        p.categories.forEach(cat => allDummyCategories.add(cat.split('/')[0])); // Add top-level category
+                    }
+                });
+                displayCategories(Array.from(allDummyCategories));
+                saveRecentSearch(query); // Save dummy query
+                return;
+            }
+
+            try {
+                const response = await fetch(`${WOOT_API_BASE_URL}/feed/all?page=1`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'x-api-key': WOOT_API_KEY
+                    }
+                });
+
+                // Log the entire response object to inspect status, headers, etc.
+                console.log("Woot API Raw Response Object:", response);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    // Log the error response body for more details
+                    console.error("Woot API Error Response Body:", errorText);
+                    throw new Error(`HTTP error! Status: ${response.status} - ${response.statusText || errorText}`);
+                }
+
+                // IMPORTANT: Log the raw text response before attempting to parse as JSON
+                const rawText = await response.clone().text(); // Use .clone() so the body can be read again by .json()
+                console.log("Woot API Raw Text Response:", rawText);
+
+                // Attempt to parse as JSON
+                const data = JSON.parse(rawText); // Use JSON.parse directly on the raw text
+                // Log the parsed JSON data to see its structure
+                console.log("Woot API Parsed JSON Data:", data);
+
+
+                // The Woot Developer Portal documentation shows a response structure
+                // where items are under an "Items" key.
+                const offers = data.Items || data.Offers || data.items || [];
+                console.log("Raw offers array from API:", offers); // Log the offers array
+
+                // Extract and display unique categories
+                const uniqueCategories = new Set();
+                offers.forEach(offer => {
+                    if (offer.Categories && Array.isArray(offer.Categories)) {
+                        offer.Categories.forEach(cat => {
+                            // Often categories are like "MAIN/SubCategory". We want the top-level.
+                            uniqueCategories.add(cat.split('/')[0]);
+                        });
+                    }
+                });
+                displayCategories(Array.from(uniqueCategories).sort()); // Sort categories alphabetically
+
+                let productsToDisplay = [];
+                const lowerCaseQuery = query.toLowerCase();
+
+                console.log("Search query received in searchWootProducts:", query); // NEW LOG
+                console.log("Lowercase query:", lowerCaseQuery); // NEW LOG
+
+                if (lowerCaseQuery) {
+                    // If a query is provided, filter the offers by Title, Subtitle, or Categories
+                    productsToDisplay = offers.filter(offer => {
+                        const title = offer.Title;
+                        const subtitle = offer.Subtitle;
+                        const categories = offer.Categories;
+
+                        const titleMatch = (title && title.toLowerCase().includes(lowerCaseQuery));
+                        const subtitleMatch = (subtitle && subtitle.toLowerCase().includes(lowerCaseQuery));
+                        // Check if any category includes the query (including top-level or sub-level)
+                        const categoryMatch = (categories && Array.isArray(categories) && categories.some(cat => cat.toLowerCase().includes(lowerCaseQuery)));
+
+                        console.log(`  Checking offer Title: "${title}" for "${lowerCaseQuery}". Match: ${titleMatch}`); // NEW LOG for each offer
+                        console.log(`  Checking offer Subtitle: "${subtitle}" for "${lowerCaseQuery}". Match: ${subtitleMatch}`); // NEW LOG for each offer
+                        console.log(`  Checking offer Categories: "${categories}" for "${lowerCaseQuery}". Match: ${categoryMatch}`); // NEW LOG for each offer
+
+                        return titleMatch || subtitleMatch || categoryMatch;
+                    });
+                    console.log(`Filtered offers for query "${query}" (Title, Subtitle, Categories):`, productsToDisplay); // Updated log
+                } else {
+                    // If no query, display all offers
+                    productsToDisplay = offers;
+                    console.log("Displaying all offers (no search query provided):", productsToDisplay);
+                }
+
+                console.log("Products to be passed to displayResults:", productsToDisplay); // NEW LOG before calling displayResults
+
+                if (productsToDisplay.length === 0) {
+                    showMessage(`No products found for your search "${query}". This could be because no deals match your query, or the API returned no results for the 'all' feed.`, 'info');
+                }
+                displayResults(productsToDisplay.map(offer => ({
+                    title: offer.Title || 'Untitled Product', // Fallback for title
+                    description: offer.Subtitle || (offer.Categories ? offer.Categories.join(', ') : 'No description available.'), // Use Categories if Subtitle is null
+                    url: offer.Url || '#', // Use the provided 'Url' directly, or a fallback
+                    salePrice: offer.SalePrice, // Pass the entire SalePrice object
+                    listPrice: offer.ListPrice, // Pass ListPrice for fallback
+                    site: offer.Site || 'Woot', // Pass the Site
+                    photo: offer.Photo, // Pass the Photo URL
+                    condition: offer.Condition,
+                    isSoldOut: offer.IsSoldOut,
+                    startDate: offer.StartDate,
+                    endDate: offer.EndDate
+                })));
+
+                saveRecentSearch(query); // Save the successful search query
+
+            } catch (error) {
+                console.error('Error fetching Woot products:', error);
+                showMessage(`Failed to fetch products: ${error.message}. This could be due to an invalid API key, network issue, or unexpected API response format. Check the browser console for details.`, 'error');
+            } finally {
+                loadingSpinner.style.display = 'none'; // Hide spinner
+            }
+        }
+
+        /**
+         * Displays the fetched product results on the page.
+         * @param {Array<Object>} products - An array of product objects.
+         */
+        function displayResults(products) {
+            console.log("displayResults called with products:", products); // New log
+            searchResultsDiv.innerHTML = ''; // Clear previous results
+            if (products.length === 0) {
+                console.log("No products to display."); // New log
+                return;
+            }
+
+            products.forEach(product => {
+                const productCard = document.createElement('div');
+                productCard.className = 'product-card';
+                if (product.isSoldOut) {
+                    productCard.classList.add('sold-out');
+                }
+
+                let priceHtml = '';
+                const hasSalePrice = product.salePrice && typeof product.salePrice.Minimum === 'number' && typeof product.salePrice.Maximum === 'number';
+                const hasListPrice = product.listPrice && typeof product.listPrice.Minimum === 'number';
+
+                if (hasSalePrice) {
+                    const minSalePrice = formatCurrency(product.salePrice.Minimum);
+                    const maxSalePrice = formatCurrency(product.salePrice.Maximum);
+                    if (minSalePrice === maxSalePrice) {
+                        priceHtml = `<p class="product-price">${minSalePrice}</p>`;
+                    } else {
+                        priceHtml = `<p class="product-price">${minSalePrice} - ${maxSalePrice}</p>`;
+                    }
+                } else if (hasListPrice) {
+                    priceHtml = `<p class="product-price">List Price: ${formatCurrency(product.listPrice.Minimum)}</p>`;
+                }
+
+
+                const imageUrl = product.photo || `https://placehold.co/200x150/cccccc/333333?text=No+Image`; // Use placeholder if no image
+                const imageAlt = product.title || 'Product image';
+
+                productCard.innerHTML = `
+                    ${product.isSoldOut ? '<span class="sold-out-badge">SOLD OUT</span>' : ''}
+                    <img src="${imageUrl}" alt="${imageAlt}" class="product-image" onerror="this.onerror=null;this.src='https://placehold.co/200x150/cccccc/333333?text=Image+Error';">
+                    <h3 class="product-title">${product.title}</h3>
+                    ${product.site ? `<p class="product-details">Site: ${product.site}</p>` : ''}
+                    <p class="product-description">${product.description}</p>
+                    ${priceHtml}
+                    <div class="product-hover-details">
+                        ${product.condition ? `<p><strong>Condition:</strong> ${product.condition}</p>` : ''}
+                        ${product.startDate ? `<p><strong>Starts:</strong> ${formatDate(product.startDate)}</p>` : ''}
+                        ${product.endDate ? `<p><strong>Ends:</strong> ${formatDate(product.endDate)}</p>` : ''}
+                        ${hasListPrice && hasSalePrice && product.listPrice.Minimum > product.salePrice.Minimum ? `<p><strong>Original Price:</strong> ${formatCurrency(product.listPrice.Minimum)}</p>` : ''}
+                    </div>
+                    <a href="${product.url}" target="_blank" rel="noopener noreferrer" class="go-to-woot-button">
+                        Go to Woot
+                    </a>
+                `;
+                console.log("Appending product card:", productCard); // New log
+                searchResultsDiv.appendChild(productCard);
+            });
+            console.log("Finished appending product cards. Current searchResultsDiv content:", searchResultsDiv.innerHTML); // New log
+        }
+
+        // Event Listeners
+        searchButton.addEventListener('click', () => {
+            const query = searchQueryInput.value.trim();
+            searchWootProducts(query);
+        });
+
+        searchQueryInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                searchButton.click();
+            }
+        });
+
+        // Initial setup on window load
+        window.onload = () => {
+            showMessage("Enter a product name and click 'Search from Woot' to find deals. Leave the search box empty to see all available deals.", 'info');
+            displayRecentSearches(); // Load and display recent searches
+            searchWootProducts(''); // Automatically perform an initial search to show all products on load
+        };
+    </script>
+</body>
+</html>
